@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Bill;
 use App\Models\UserExpense;
+use App\Models\BalanceRecord;
+
 
 class BillController extends Controller
 {
@@ -51,9 +53,9 @@ class BillController extends Controller
 
         // Checking if users ids are valid or not
 
-        $count_of_ids = User::whereIn('id', $user_ids )->count();
+        $count_of_ids = User::whereIn('id', $user_ids)->count();
 
-        if($count_of_ids !== count($user_ids)){
+        if($count_of_ids !== count(  array_unique( $user_ids))  ){
 
             return response()->json([
                 'status' => false,
@@ -68,7 +70,6 @@ class BillController extends Controller
         // EXPENSE TYPE = EQUAL
 
         if($request->input('expense_type') == '0'){
-
 
 
             $equal_amount = round( $request->input('expense') / count($user_ids) , 2); // upto 2 decimals
@@ -96,7 +97,7 @@ class BillController extends Controller
 
         // We need percentages or exact values for Expense type 2 & 1
 
-        if(  empty( $request->input("amount_paid_by_friends") )  ){
+        if( ($request->input('expense_type') == '1' || $request->input('expense_type') == '2' )&&  empty( $request->input("amount_paid_by_friends") )  ){
 
             return response()->json([
                 'status' => false,
@@ -127,6 +128,10 @@ class BillController extends Controller
             }
 
 
+            $user_ids =  explode(",", $request->input('friend_ids') ) ;
+            $amounts_paid_by_each_user = $exact_amounts;
+
+
             if( count($user_ids) != count($exact_amounts) ){
 
                 return response()->json([
@@ -136,10 +141,6 @@ class BillController extends Controller
                 ]);
 
             }
-
-
-            $user_ids =  explode(",", $request->input('friend_ids') ) ;
-            $amounts_paid_by_each_user = $exact_amounts;
 
 
 
@@ -214,6 +215,47 @@ class BillController extends Controller
             ];
 
             $insert_data[] = $data;
+
+
+            // Update balances for all users
+
+            if(  $user_id != $request->input('bill_paid_by')  ){
+
+                $query = BalanceRecord::query();
+                $query->where([
+                    ['lender_id','=',$request->input('bill_paid_by')] ,
+                    ['borrower_id','=',$user_id ] ,
+
+                ]);
+
+
+                $balanceRecord = $query->first();
+
+                // Record already exists ,  update existing record
+                if($balanceRecord){
+
+                    $balanceRecord->balance = round( $balanceRecord->balance + $data["amount_paid"] , 2);
+                    $balanceRecord->save();
+                }
+
+                if(!$balanceRecord){
+
+                    $balanceRecord = new BalanceRecord;
+
+                    $balanceRecord->lender_id = $request->input('bill_paid_by');
+                    $balanceRecord->borrower_id = $user_id ;
+                    $balanceRecord->balance = $data["amount_paid"];
+                    $balanceRecord->save();
+                }
+
+
+
+
+
+
+            }
+
+
 
         }
 
