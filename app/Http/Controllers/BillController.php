@@ -21,7 +21,7 @@ class BillController extends Controller
             "bill_paid_by" => "required",
             "expense" => "required|numeric|regex:/^\d*(\.\d{1,2})?$/",
             "about_bill" => "required|min:1|max:255",
-            "friend_ids" => "required", // ids seperated by ,
+            "friend_ids" => "required", // ids seperated by ' , ' ( ids of people to whom bill is being paid )
             "amount_paid_by_friends" => "nullable" // values seperated by comma
         ]);
 
@@ -63,7 +63,9 @@ class BillController extends Controller
         }
 
 
-        // EQUAL
+
+
+        // EXPENSE TYPE = EQUAL
 
         if($request->input('expense_type') == '0'){
 
@@ -92,11 +94,99 @@ class BillController extends Controller
         }
 
 
+        // We need percentages or exact values for Expense type 2 & 1
+
+        if(  empty( $request->input("amount_paid_by_friends") )  ){
+
+            return response()->json([
+                'status' => false,
+                'errors' => [],
+                'message' => "Amount / percentage of amount paid to friends can not be empty "
+            ]);
+
+        }
+
+
+        // EXPENSE TYPE = EXACT
+
+        if($request->input('expense_type') == '1'){
+
+
+
+            $exact_amounts = explode(",", $request->input('amount_paid_by_friends') )  ;
+
+            // If sum doesn't match total bill
+            if( array_sum($exact_amounts) !=   $request->input('expense') ){
+
+                return response()->json([
+                    'status' => false,
+                    'errors' => [],
+                    'message' => "Sum of amounts is not equal to the total bill"
+                ]);
+
+            }
+
+
+            if( count($user_ids) != count($exact_amounts) ){
+
+                return response()->json([
+                    'status' => false,
+                    'errors' => [],
+                    'message' => "Counts of amounts supplied is not equal to count of friends"
+                ]);
+
+            }
+
+
+            $user_ids =  explode(",", $request->input('friend_ids') ) ;
+            $amounts_paid_by_each_user = $exact_amounts;
+
+
+
+        }
+
+
+
+        // EXPENSE TYPE = PERCENT
+
+        if($request->input('expense_type') == '2'){
+
+            $percents = explode(",", $request->input('amount_paid_by_friends') )  ;
+
+            if( array_sum($percents) != 100 ){
+
+                // if sum of percentages is not equal to 100
+                return response()->json([
+                    'status' => false,
+                    'errors' => [],
+                    'message' => "Sum of percentages is not equal to the total bill (100%)"
+                ]);
+            }
+
+
+            $user_ids =  explode(",", $request->input('friend_ids') ) ;
+            $amounts_paid_by_each_user = [];
+
+            foreach($percents as $percent){
+
+                $amounts_paid_by_each_user[] = $request->input('expense')  * ( $percent / 100 );  // Calculate amount from percentage
+
+            }
+
+            if( count($user_ids) != count($amounts_paid_by_each_user) ){
+
+                return response()->json([
+                    'status' => false,
+                    'errors' => [],
+                    'message' => "Counts of amounts supplied is not equal to count of friends"
+                ]);
+
+            }
 
 
 
 
-
+        }
 
 
 
@@ -120,7 +210,7 @@ class BillController extends Controller
             $data = [
                 "bill_id" => $bill->id,
                 "user_id" => $user_id,
-                "amount_paid" => $amounts_paid_by_each_user[$user_id_index]
+                "amount_paid" => round( $amounts_paid_by_each_user[$user_id_index] , 2)
             ];
 
             $insert_data[] = $data;
