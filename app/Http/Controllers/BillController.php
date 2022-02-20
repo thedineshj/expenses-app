@@ -372,7 +372,7 @@ class BillController extends Controller
 
 
         return response()->json([
-            'status' => false,
+            'status' => true,
             'errors' => [],
             'data' => $result ? $result->toArray() : [] ,
             'message' => "Expenses of the user fetched successfully"

@@ -33,7 +33,7 @@ class BalanceRecordController extends Controller
 
 
         return response()->json([
-            'status' => false,
+            'status' => true,
             'errors' => [],
             'data' => $result ? $result->toArray() : [] ,
             'message' => "Balances of the user fetched successfully"

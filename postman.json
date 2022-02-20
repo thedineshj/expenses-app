@@ -1,0 +1,280 @@
+{
+	"info": {
+		"_postman_id": "4394c477-efaf-44cc-b79f-98b7eaa17c7b",
+		"name": "Expenses App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Default Laravel Landing Page",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://expense-sharing-application.local/",
+					"protocol": "https",
+					"host": [
+						"expense-sharing-application",
+						"local"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Expense",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "expense_type",
+							"value": "2"
+						},
+						{
+							"key": "bill_paid_by",
+							"value": "4"
+						},
+						{
+							"key": "expense",
+							"value": "1200"
+						},
+						{
+							"key": "about_bill",
+							"value": "abcf"
+						},
+						{
+							"key": "friend_ids",
+							"value": "1,2,3,4"
+						},
+						{
+							"key": "amount_paid_by_friends",
+							"value": "40,20,20,20"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://expense-sharing-application.local/api/new-expense",
+					"protocol": "https",
+					"host": [
+						"expense-sharing-application",
+						"local"
+					],
+					"path": [
+						"api",
+						"new-expense"
+					]
+				},
+				"description": "Paying new bill"
+			},
+			"response": []
+		},
+		{
+			"name": "Sending Incorrect user ids",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "expense_type",
+							"value": "0"
+						},
+						{
+							"key": "bill_paid_by",
+							"value": "52"
+						},
+						{
+							"key": "expense",
+							"value": "1200"
+						},
+						{
+							"key": "about_bill",
+							"value": "abcf"
+						},
+						{
+							"key": "friend_ids",
+							"value": "1,2,3,4"
+						},
+						{
+							"key": "amount_paid_by_friends",
+							"value": "40,20,20,20"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://expense-sharing-application.local/api/new-expense",
+					"protocol": "https",
+					"host": [
+						"expense-sharing-application",
+						"local"
+					],
+					"path": [
+						"api",
+						"new-expense"
+					]
+				},
+				"description": "Paying new bill"
+			},
+			"response": []
+		},
+		{
+			"name": "EQUAL - Expense Type Example",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "expense_type",
+							"value": "0"
+						},
+						{
+							"key": "bill_paid_by",
+							"value": "1"
+						},
+						{
+							"key": "expense",
+							"value": "1000"
+						},
+						{
+							"key": "about_bill",
+							"value": "abcf"
+						},
+						{
+							"key": "friend_ids",
+							"value": "2,3,4"
+						},
+						{
+							"key": "amount_paid_by_friends",
+							"value": ""
+						}
+					]
+				},
+				"url": {
+					"raw": "https://expense-sharing-application.local/api/new-expense",
+					"protocol": "https",
+					"host": [
+						"expense-sharing-application",
+						"local"
+					],
+					"path": [
+						"api",
+						"new-expense"
+					]
+				},
+				"description": "Paying new bill"
+			},
+			"response": []
+		},
+		{
+			"name": "Sending Incoorect Expense Type Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "expense_type",
+							"value": "6"
+						},
+						{
+							"key": "bill_paid_by",
+							"value": "4"
+						},
+						{
+							"key": "expense",
+							"value": "1200"
+						},
+						{
+							"key": "about_bill",
+							"value": "abcf"
+						},
+						{
+							"key": "friend_ids",
+							"value": "1,2,3,4"
+						},
+						{
+							"key": "amount_paid_by_friends",
+							"value": "40,20,20,20"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://expense-sharing-application.local/api/new-expense",
+					"protocol": "https",
+					"host": [
+						"expense-sharing-application",
+						"local"
+					],
+					"path": [
+						"api",
+						"new-expense"
+					]
+				},
+				"description": "Paying new bill"
+			},
+			"response": []
+		},
+		{
+			"name": "Particular user expenses",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://expense-sharing-application.local/api/user-expenses?userId=1",
+					"protocol": "https",
+					"host": [
+						"expense-sharing-application",
+						"local"
+					],
+					"path": [
+						"api",
+						"user-expenses"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://expense-sharing-application.local/api/balances?userId=1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://expense-sharing-application.local/api/balances?userId=1",
+					"protocol": "https",
+					"host": [
+						"expense-sharing-application",
+						"local"
+					],
+					"path": [
+						"api",
+						"balances"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
