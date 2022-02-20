@@ -268,8 +268,9 @@ class BillController extends Controller
 
 
         return response()->json([
-            'status' => false,
+            'status' => true,
             'errors' => [],
+            'message' => 'Success',
             'data' => [
                $bill->id, $user_ids , $amounts_paid_by_each_user
             ]
@@ -277,6 +278,40 @@ class BillController extends Controller
 
 
 
+
+
+
+    }
+
+
+    public function listOfExpenses(Request $request){
+
+        $validator = Validator::make($request->all(), [
+            "userId" => "required",
+        ]);
+
+
+        if ($validator->fails() ){
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->messages(),
+                'message' => "Invalid data"
+            ]);
+        }
+
+
+        $query = Bill::query();
+        $query->where('bill_paid_by', $request->input('userId') );
+        $query->with(['user','userExpenses']);
+        $result = $query->get();
+
+
+        return response()->json([
+            'status' => false,
+            'errors' => [],
+            'data' => $result ? $result->toArray() : [] ,
+            'message' => "Expenses of the user fetched successfully"
+        ]);
 
 
 

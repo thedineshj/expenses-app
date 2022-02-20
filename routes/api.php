@@ -16,3 +16,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/new-expense', [ BillController::class, 'newExpense'] );
+Route::get('/user-expenses', [ BillController::class, 'listOfExpenses'] );
