@@ -221,32 +221,97 @@ class BillController extends Controller
 
             if(  $user_id != $request->input('bill_paid_by')  ){
 
+
+
+                // First check if there are any existing dues to be paid for the user
+
+
+
+                $qry = BalanceRecord::query();
+                $qry->where([
+                    ['lender_id','=',$request->input('bill_paid_by')] ,
+                    ['borrower_id','=',$user_id ] ,
+                ]);
+
+
+                $dueRecord = $qry->first();
+
+
                 $query = BalanceRecord::query();
                 $query->where([
                     ['lender_id','=',$request->input('bill_paid_by')] ,
                     ['borrower_id','=',$user_id ] ,
-
                 ]);
 
 
                 $balanceRecord = $query->first();
 
-                // Record already exists ,  update existing record
-                if($balanceRecord){
 
-                    $balanceRecord->balance = round( $balanceRecord->balance + $data["amount_paid"] , 2);
-                    $balanceRecord->save();
+
+                if($dueRecord){
+
+                    $amountRemaining = $dueRecord->balance - $data["amount_paid"];
+
+                    if($amountRemaining >=0 ){
+                        $dueRecord->balance = $amountRemaining;
+                        $dueRecord->save();
+                    }
+
+                    if($amountRemaining < 0 ){
+
+                        if($balanceRecord){
+                            $balanceRecord->balance = abs($amountRemaining);
+                            $balanceRecord->save();
+                        }
+
+                        if(!$balanceRecord){
+
+                            $balanceRecord = new BalanceRecord;
+
+                            $balanceRecord->lender_id = $request->input('bill_paid_by');
+                            $balanceRecord->borrower_id = $user_id ;
+                            $balanceRecord->balance = $data["amount_paid"];
+                            $balanceRecord->save();
+                        }
+
+
+
+                    }
+
                 }
+                else{
 
-                if(!$balanceRecord){
+                    if($balanceRecord){
 
-                    $balanceRecord = new BalanceRecord;
+                        $balanceRecord->balance = round( $balanceRecord->balance + $data["amount_paid"] , 2);
+                        $balanceRecord->save();
 
-                    $balanceRecord->lender_id = $request->input('bill_paid_by');
-                    $balanceRecord->borrower_id = $user_id ;
-                    $balanceRecord->balance = $data["amount_paid"];
-                    $balanceRecord->save();
-                }
+                    }
+
+                        if(!$balanceRecord){
+
+                            $balanceRecord = new BalanceRecord;
+
+                            $balanceRecord->lender_id = $request->input('bill_paid_by');
+                            $balanceRecord->borrower_id = $user_id ;
+                            $balanceRecord->balance = $data["amount_paid"];
+                            $balanceRecord->save();
+                        }
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
