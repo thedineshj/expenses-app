@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\BillController;
+use App\Http\Controllers\BalanceRecordController;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -17,3 +19,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/new-expense', [ BillController::class, 'newExpense'] );
 Route::get('/user-expenses', [ BillController::class, 'listOfExpenses'] );
+Route::get('/balances', [ BalanceRecordController::class, 'listOfBalances'] );
