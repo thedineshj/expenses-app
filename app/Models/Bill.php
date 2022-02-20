@@ -6,18 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property int $id
- * @property string $name
- * @property string $email
- * @property string $mobile
- * @property Bill[] $bills
+ * @property int $bill_paid_by
+ * @property string $about_bill
+ * @property string $billed_date
+ * @property boolean $expense_type
+ * @property float $expense
+ * @property User $user
  * @property UserExpense[] $userExpenses
  */
-class User extends Model
+class Bill extends Model
 {
     /**
      * @var array
      */
-    protected $fillable = ['name', 'email', 'mobile'];
+    protected $fillable = ['bill_paid_by', 'about_bill', 'billed_date', 'expense_type', 'expense'];
 
     /**
      * Indicates if the model should be timestamped.
@@ -27,11 +29,11 @@ class User extends Model
     public $timestamps = false;
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function bills()
+    public function user()
     {
-        return $this->hasMany('App\Models\Bill', 'bill_paid_by');
+        return $this->belongsTo('App\Models\User', 'bill_paid_by');
     }
 
     /**
